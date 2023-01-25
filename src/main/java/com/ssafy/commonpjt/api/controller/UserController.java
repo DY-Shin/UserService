@@ -67,13 +67,11 @@ public class UserController {
     // 회원 탈퇴
     @DeleteMapping("delete")
     @PreAuthorize("hasAnyRole('USER')")
-    public ResponseEntity<?> delete(@Validated @RequestBody UserLogoutRequestDto logout, Errors errors) {
+    public ResponseEntity<?> delete(@Validated @RequestBody UserLogoutRequestDto logout, Errors errors) throws Exception {
         if (errors.hasErrors()) {
             return response.invalidFields(Helper.refineErrors(errors));
         }
-        userService.delete(logout);
-        userService.logout(logout);
-        return new ResponseEntity<>("회원 탈퇴되었습니다.", HttpStatus.OK);
+        return userService.delete(logout);
     }
 
     // 회원 정보 조회

@@ -109,14 +109,15 @@ public class UserService {
         }
         Authentication authentication = jwtTokenProvider.getAuthentication(logout.getAccessToken());
         String userId = authentication.getName();
-        User user = userRepository.findByUserId(SecurityUtil.getLoginUsername());
-        if (!user.matchPassword(passwordEncoder, checkPassword)){
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new Exception("유저 없음"));
+        if (!user.matchPassword(passwordEncoder, logout.getCheckPassword())){
             return response.fail("비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST);
         }
         userRepository.foreignKeyDelete();
-        userRepository.delete(userId);
+        userRepository.delete(user);
         userRepository.foreignKeyCheck();
-        return response.success();
+        logout(logout);
+        return response.success("회원 탈퇴되었습니다.");
     }
 }
 
