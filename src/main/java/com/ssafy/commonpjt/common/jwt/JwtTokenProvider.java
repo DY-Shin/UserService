@@ -1,6 +1,6 @@
 package com.ssafy.commonpjt.common.jwt;
 
-import com.ssafy.commonpjt.api.dto.TokenDto;
+import com.ssafy.commonpjt.api.dto.user.TokenDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
 
     private final Key key;
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L; // 30분 액세스 토큰 만료기한
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L; // 7일 리프레시 토큰 만료기한
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 30 * 60 * 1000L; // 30분
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 7 * 24 * 60 * 60 * 1000L; // 7일
 
     // application.yml 에서 설정한 secret Key 값으로 토큰 생성
     // application.yml 은 배포되면 안됨
@@ -37,7 +37,7 @@ public class JwtTokenProvider {
     }
 
     // 토큰 생성 설정
-    public TokenDto generateToken(Authentication authentication) {
+    public TokenDTO generateToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -56,7 +56,7 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
-        return TokenDto.builder()
+        return TokenDTO.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)

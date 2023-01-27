@@ -12,18 +12,19 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "user")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_index")
-    private Long id;
+    private Integer userIndex;
 
     @Column(nullable = false, length = 50, unique = true)
     private String userId;
@@ -34,14 +35,36 @@ public class User implements UserDetails {
     @Column(nullable = false, length = 50)
     private String userPhone;
 
-    @Column(nullable = false, length = 50)
-    private String userName;
+    @Column(name= "user_name" ,nullable = false, length = 50)
+    private String name;
 
+//    @ColumnDefault("'TEST'")
     @Column(length = 50, unique = true)
-    private String userCorporateRegistrationNumber;
+    private String corporateRegistrationNumber;
 
     @Column(nullable = false, length = 100)
     private String userAddress;
+
+    @OneToMany(mappedBy = "user")
+    private List<WishList> wishList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "productSeller")
+    private List<Product> productSeller = new ArrayList<>();
+
+    @OneToMany(mappedBy = "seller")
+    private List<ChatRoom> seller = new ArrayList<>();
+
+    @OneToMany(mappedBy = "buyer")
+    private List<ChatRoom> buyer = new ArrayList<>();
+
+    @OneToMany(mappedBy = "sender")
+    private List<ChatMessage> sender = new ArrayList<>();
+
+    @OneToMany(mappedBy = "guest")
+    private List<Meeting> meetingGuest =  new ArrayList<>();
+
+    @OneToMany(mappedBy = "owner")
+    private List<Meeting> meetingOwner = new ArrayList<>();
 
     // 권한 설정을 외래 키로 부여
     @Column
@@ -86,30 +109,10 @@ public class User implements UserDetails {
         return true;
     }
 
-//    // 정보 수정
-//    public void updateId(String userId) {
-//        this.userId = userId;
-//    }
-//
-//    public void updatePassword(PasswordEncoder passwordEncoder, String userPassword) {
-//        this.userPassword = passwordEncoder.encode(userPassword);
-//    }
-//
-//    public void updatePhone(String userPhone) {
-//        this.userPhone = userPhone;
-//    }
-//
-//    public void updateName(String userName) {
-//        this.userName = userName;
-//    }
-//
-//    public void updateCorporateRegistrationNumber(String userCorporateRegistrationNumber) {
-//        this.userCorporateRegistrationNumber = userCorporateRegistrationNumber;
-//    }
-//
-//    public void updateAddress(String userAddress) {
-//        this.userAddress = userAddress;
-//    }
+    // 비밀번호 수정
+    public void updatePassword(PasswordEncoder passwordEncoder, String userPassword) {
+        this.userPassword = passwordEncoder.encode(userPassword);
+    }
 
     // 패스워드 암호화
     public void encodePassword(PasswordEncoder passwordEncoder) {
@@ -120,5 +123,4 @@ public class User implements UserDetails {
     public boolean matchPassword(PasswordEncoder passwordEncoder, String checkPassword) {
         return passwordEncoder.matches(checkPassword, getPassword());
     }
-
 }
